@@ -8,55 +8,41 @@ public class Main {
         char noll = 'O';
         char[][] krestiki = new char[size][size];
         char s = '$';
-
         for (int i = 0; i < size; i++) { // берем ячейку и заносим туда элемент $
             for (int y = 0; y < size; y++) {
                 krestiki[i][y] = s;
             }
         }
-        for (int i = 0; i < 4; i++) { //выводит строку
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (int i = 0; i < size; i++) { // выводит массив в виде
-            //           0 1 2 3
-//            1 $ $ $
-//            2 $ $ $
-//            3 $ $ $
-            System.out.print((i + 1) + " ");
-            for (int u = 0; u < size; u++) {
-                System.out.print(krestiki[i][u] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-
+        battlefield(size, s, krestiki);
         while (true) {
-
-            firstPlayerStep(size,krestiki,s, krest);
-            secondPlayerStep(size,krestiki,s, noll);
+            startGame(size, krestiki, s, krest);
+            if (checkWinPlayer(size, s, krestiki, krest)) {
+                return;
+            }
+            startGame(size, krestiki, s, noll);
+            if (checkWinPlayer(size, s, krestiki, noll)) {
+                return;
+            }
         }
     }
 
-    public static void firstPlayerStep(int size, char[][] krestiki, char s, char krest) {
+    public static void startGame(int size, char[][] krestiki, char s, char symbol) {
 
         boolean f = false;
+        int x, y;
         do {
-            System.out.println("Ходит первый игрок");
+            System.out.println("ходит игрок с символом " + symbol);
             Scanner scanner = new Scanner(System.in);
-            int x = scanner.nextInt() - 1;
-            int y = scanner.nextInt() - 1;
-            if (x < 0 || y < 0 || x > size || y > size) {
-                System.out.println("Ошибка.Веедите цифру от 1 до 3");
-            } else if (krestiki[x][y] != s) {
-                System.out.println("Ошибка.Данная ячейка занята");
+            x = scanner.nextInt() - 1;
+            y = scanner.nextInt() - 1;
+            f = checkError(size, krestiki, x, y, s, symbol);
+        } while (!f);
+        krestiki[x][y] = symbol;
+        battlefield(size, s, krestiki);
+    }
 
-            } else {
-                krestiki[x][y] = krest;
-                f = true;
-            }
-        } while (f != true);
-        for (int i = 0; i < 4; i++) {
+    public static void battlefield(int size, char s, char[][] krestiki) {
+        for (int i = 0; i < 4; i++) { //выводит строку
             System.out.print(i + " ");
         }
         System.out.println();
@@ -69,46 +55,55 @@ public class Main {
         }
         System.out.println();
 
-        boolean win = false;
-        if (krestiki[0][0] == krest && krestiki[1][1] == krest && krestiki[2][2] == krest) {
-            win = true;
+    }
+
+    public static boolean checkWinPlayer(int size, char s, char[][] krestiki, char symbol) {
+
+
+        if (win(krestiki, symbol)) {
+            System.out.println("Победа " + symbol);
+            battlefield(size, s, krestiki);
+            return true;
+        } else if (draw(size, krestiki, s)) {
+            System.out.println("Ничья!");
+            battlefield(size, s, krestiki);
+            return true;
+        } else {
+            return false;
         }
-        if (krestiki[0][0] == krest && krestiki[0][1] == krest && krestiki[0][2] == krest) {
-            win = true;
+    }
+
+    public static boolean win(char[][] krestiki, char c) {
+        if (krestiki[0][0] == c && krestiki[1][1] == c && krestiki[2][2] == c) {
+            return true;
         }
-        if (krestiki[0][1] == krest && krestiki[1][1] == krest && krestiki[2][1] == krest) {
-            win = true;
+        if (krestiki[0][0] == c && krestiki[0][1] == c && krestiki[0][2] == c) {
+            return true;
         }
-        if (krestiki[0][0] == krest && krestiki[1][0] == krest && krestiki[2][0] == krest) {
-            win = true;
+        if (krestiki[0][1] == c && krestiki[1][1] == c && krestiki[2][1] == c) {
+            return true;
         }
-        if (krestiki[0][2] == krest && krestiki[1][1] == krest && krestiki[2][0] == krest) {
-            win = true;
+        if (krestiki[0][0] == c && krestiki[1][0] == c && krestiki[2][0] == c) {
+            return true;
         }
-        if (krestiki[1][0] == krest && krestiki[1][1] == krest && krestiki[1][2] == krest) {
-            win = true;
+        if (krestiki[0][2] == c && krestiki[1][1] == c && krestiki[2][0] == c) {
+            return true;
         }
-        if (krestiki[2][0] == krest && krestiki[2][1] == krest && krestiki[2][2] == krest) {
-            win = true;
+        if (krestiki[1][0] == c && krestiki[1][1] == c && krestiki[1][2] == c) {
+            return true;
         }
-        if (krestiki[0][2] == krest && krestiki[1][2] == krest && krestiki[2][2] == krest) {
-            win = true;
+        if (krestiki[2][0] == c && krestiki[2][1] == c && krestiki[2][2] == c) {
+            return true;
         }
-        if (win == true) {
-            System.out.println("Победа первого игрока!");
-            for (int i = 0; i < 4; i++) {
-                System.out.print(i + " ");
-            }
-            System.out.println();
-            for (int i = 0; i < size; i++) {
-                System.out.print((i + 1) + " ");
-                for (int u = 0; u < size; u++) {
-                    System.out.print(krestiki[i][u] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
+        if (krestiki[0][2] == c && krestiki[1][2] == c && krestiki[2][2] == c) {
+            return true;
+        } else {
+            return false;
         }
+
+    }
+
+    public static boolean draw(int size, char[][] krestiki, char s) {
         boolean draw = false;
         for (int i = 0; i < size; i++) {
             for (int y = 0; y < size; y++) {
@@ -122,121 +117,18 @@ public class Main {
                 }
             }
         }
-        if (draw == true) {
-            System.out.println("Ничья!");
-            for (int k = 0; k < 4; k++) {
-                System.out.print(k + " ");
-            }
-            System.out.println();
-            for (int l = 0; l < size; l++) {
-                System.out.print((l + 1) + " ");
-                for (int u = 0; u < size; u++) {
-                    System.out.print(krestiki[l][u] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
-
+        return draw;
     }
 
-    public static void secondPlayerStep(int size, char[][] krestiki, char s, char noll) {
-        boolean f1 = false;
-        do {
-            System.out.println("Ходит второй игрок");
-            Scanner scanner = new Scanner(System.in);
-            int c = scanner.nextInt() - 1;
-            int p = scanner.nextInt() - 1;
-            if (c < 0 || p < 0 || c > size || p > size) {
-                System.out.println("Ошибка.Веедите цифру от 1 до 3");
-            } else if (krestiki[c][p] != s) {
-                System.out.println("Ошибка.Данная ячейка занята");
-
-            } else {
-                krestiki[c][p] = noll;
-                f1 = true;
-            }
-        } while (f1 != true);
-        for (int i = 0; i < 4; i++) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (int i = 0; i < size; i++) {
-            System.out.print((i + 1) + " ");
-            for (int u = 0; u < size; u++) {
-                System.out.print(krestiki[i][u] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-
-
-        boolean win1 = false;
-        if (krestiki[0][0] == noll && krestiki[1][1] == noll && krestiki[2][2] == noll) {
-            win1 = true;
-        }
-        if (krestiki[0][0] == noll && krestiki[0][1] == noll && krestiki[0][2] == noll) {
-            win1 = true;
-        }
-        if (krestiki[0][1] == noll && krestiki[1][1] == noll && krestiki[2][1] == noll) {
-            win1 = true;
-        }
-        if (krestiki[0][0] == noll && krestiki[1][0] == noll && krestiki[2][0] == noll) {
-            win1 = true;
-        }
-        if (krestiki[0][2] == noll && krestiki[1][1] == noll && krestiki[2][0] == noll) {
-            win1 = true;
-        }
-        if (krestiki[1][0] == noll && krestiki[1][1] == noll && krestiki[1][2] == noll) {
-            win1 = true;
-        }
-        if (krestiki[2][0] == noll && krestiki[2][1] == noll && krestiki[2][2] == noll) {
-            win1 = true;
-        }
-        if (krestiki[0][2] == noll && krestiki[1][2] == noll && krestiki[2][2] == noll) {
-            win1 = true;
-        }
-        if (win1 == true) {
-            System.out.println("Победа второго игрока!");
-            for (int i = 0; i < 4; i++) {
-                System.out.print(i + " ");
-            }
-            System.out.println();
-            for (int i = 0; i < size; i++) {
-                System.out.print((i + 1) + " ");
-                for (int u = 0; u < size; u++) {
-                    System.out.print(krestiki[i][u] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
-            return;
-        }
-        boolean draw1 = false;
-        for (int i = 0; i < size; i++) {
-            for (int y = 0; y < size; y++) {
-                if (krestiki[i][y] == s) {
-                    draw1 = false;
-                    break;
-                } else {
-                    draw1 = true;
-                }
-            }
-        }
-        if (draw1 == true) {
-            System.out.println("Ничья!");
-            for (int k = 0; k < 4; k++) {
-                System.out.print(k + " ");
-            }
-            System.out.println();
-            for (int l = 0; l < size; l++) {
-                System.out.print((l + 1) + " ");
-                for (int u = 0; u < size; u++) {
-                    System.out.print(krestiki[l][u] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
+    public static boolean checkError(int size, char[][] krestiki, int x, int y, char s, char symbol) {
+        if (x < 0 || y < 0 || x > size || y > size) {
+            System.out.println("Ошибка.Веедите цифру от 1 до 3");
+            return false;
+        } else if (krestiki[x][y] != s) {
+            System.out.println("Ошибка.Данная ячейка занята");
+            return false;
+        } else {
+            return true;
         }
     }
 
